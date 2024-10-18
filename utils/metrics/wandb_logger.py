@@ -6,7 +6,7 @@ def wandb_logger(epoch,
                  metrics_dict,
                  loss_dict,
                  lr,
-                 mapped_cls_name):
+                 mapped_cls_name, trainer_global_steps):
 
     # Metrics
     mean_acc, class_acc = metrics_dict['mean_acc'], metrics_dict['class_acc']
@@ -20,19 +20,20 @@ def wandb_logger(epoch,
 
     # Log scalars with wandb for general metrics and losses
     recorder.wandb_logger.log({
-        f'{mode}_Loss': loss_meter_avg,
-        f'{mode}_LossSoftmax': loss_focal.item(),
-        f'{mode}_LossLovasz': loss_lovasz.item(),
-        f'{mode}_meanAcc': mean_acc.item(),
-        f'{mode}_meanIOU': mean_iou.item(),
-        f'{mode}_meanRecall': mean_recall.item(),
-        f'{mode}_lr': lr
-    }, step=epoch)
+        f'{mode}/Loss': loss_meter_avg,
+        f'{mode}/LossSoftmax': loss_focal.item(),
+        f'{mode}/LossLovasz': loss_lovasz.item(),
+        f'{mode}/meanAcc': mean_acc.item(),
+        f'{mode}/meanIOU': mean_iou.item(),
+        f'{mode}/meanRecall': mean_recall.item(),
+        f'{mode}/lr': lr,
+        'epoch': epoch
+    }, step=trainer_global_steps)
 
     # Log class-specific metrics
     for i, (_, class_name) in enumerate(mapped_cls_name.items()):
         recorder.wandb_logger.log({
-            f'{mode}_{i:02d}_{class_name}_Acc': class_acc[i].item(),
-            f'{mode}_{i:02d}_{class_name}_Recall': class_recall[i].item(),
-            f'{mode}_{i:02d}_{class_name}_IOU': class_iou[i].item()
-        }, step=epoch)
+            f'{mode}/Acc/{class_name}_{i:02d}': class_acc[i].item(),
+            f'{mode}/Recall/{class_name}_{i:02d}': class_recall[i].item(),
+            f'{mode}/IOU/{class_name}_{i:02d}': class_iou[i].item()
+        }, step=trainer_global_steps)

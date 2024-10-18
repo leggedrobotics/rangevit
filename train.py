@@ -424,7 +424,7 @@ class Trainer(object):
                          metrics_dict=metrics_dict,
                          loss_dict=loss_dict,
                          lr=lr,
-                         mapped_cls_name=self.mapped_cls_name)
+                         mapped_cls_name=self.mapped_cls_name, trainer_global_steps=self.global_trainer_steps)
 
 
             # Results at the end of the epoch
@@ -669,7 +669,7 @@ class Trainer(object):
                          metrics_dict=metrics_dict,
                          loss_dict=loss_dict,
                          lr=lr,
-                         mapped_cls_name=self.mapped_cls_name)
+                         mapped_cls_name=self.mapped_cls_name, trainer_global_steps=self.global_trainer_steps)
             
             # Results at the end of the epoch
             log_str = '>>> {} Loss {:0.4f} Acc {:0.4f} IOU {:0.4F} Recall {:0.4f}'.format(
