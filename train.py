@@ -358,13 +358,14 @@ class Trainer(object):
                     log_str += 'RT {}'.format(remain_time)
                     self.recorder.logger.info(log_str)
 
-                if self.recorder.wandb_logger is not None and mode == 'Train':
-                    self.recorder.wandb_logger.log({
-                            'lr': lr,
-                            'Loss': loss.item(),
-                            'Acc': mean_acc.item(),
-                            'IOU': mean_iou.item(),
-                        }, step=self.global_trainer_steps)
+                if self.recorder is not None:
+                    if self.recorder.wandb_logger is not None and mode == 'Train':
+                        self.recorder.wandb_logger.log({
+                                'lr': lr,
+                                'Loss': loss.item(),
+                                'Acc': mean_acc.item(),
+                                'IOU': mean_iou.item(),
+                            }, step=self.global_trainer_steps)
 
         with torch.no_grad():
             mean_acc, class_acc = self.metrics.getAcc()
@@ -602,13 +603,14 @@ class Trainer(object):
                     log_str += 'RT PER EPOCH {}'.format(remain_time_1epoch)
                     self.recorder.logger.info(log_str)
                 
-                if self.recorder.wandb_logger is not None and mode == 'Train':
-                    self.recorder.wandb_logger.log({
-                            'lr': lr,
-                            'Loss': loss.item(),
-                            'Acc': mean_acc.item(),
-                            'IOU': mean_iou.item(),
-                        }, step=self.global_trainer_steps)
+                if self.recorder is not None:
+                    if self.recorder.wandb_logger is not None and mode == 'Train':
+                        self.recorder.wandb_logger.log({
+                                'lr': lr,
+                                'Loss': loss.item(),
+                                'Acc': mean_acc.item(),
+                                'IOU': mean_iou.item(),
+                            }, step=self.global_trainer_steps)
 
         with torch.no_grad():
             mean_acc, class_acc = self.metrics.getAcc()
