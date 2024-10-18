@@ -6,3 +6,4 @@ tensorboardX
 prettytable
 timm
 nuscenes-devkit
+wandb
