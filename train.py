@@ -28,6 +28,7 @@ import utils
 import utils.tools as tools
 from utils.metrics.eval_results import eval_results
 from utils.metrics.tensorboard_logger import tensorboard_logger
+from utils.metrics.wandb_logger import wandb_logger
 from utils.inference.inference_utils import inference
 from utils.tools import Recorder
 
@@ -42,6 +43,8 @@ class Trainer(object):
 
         # Init data loader
         self.train_loader, self.val_loader, self.train_sampler, self.val_sampler = self._initDataloader()
+
+        self.global_trainer_steps = 0 
 
         # Init criterion
         self.criterion = self._initCriterion()
@@ -295,6 +298,7 @@ class Trainer(object):
 
                 # Update lr after backward (required by pytorch)
                 self.scheduler.step()
+                self.global_trainer_steps += 1
             else:
                 with torch.no_grad():
                     assert input_feature.shape[0] == 1 # validation batch size has to be 1
@@ -354,6 +358,14 @@ class Trainer(object):
                     log_str += 'RT {}'.format(remain_time)
                     self.recorder.logger.info(log_str)
 
+                if self.recorder.wandb_logger is not None and mode == 'Train':
+                    self.recorder.wandb_logger.log({
+                            'lr': lr,
+                            'Loss': loss.item(),
+                            'Acc': mean_acc.item(),
+                            'IOU': mean_iou.item(),
+                        }, step=self.global_trainer_steps)
+
         with torch.no_grad():
             mean_acc, class_acc = self.metrics.getAcc()
             mean_recall, class_recall = self.metrics.getRecall()
@@ -404,6 +416,15 @@ class Trainer(object):
                                loss_dict=loss_dict,
                                lr=lr,
                                mapped_cls_name=self.mapped_cls_name)
+            
+            wandb_logger(epoch=epoch,
+                         mode=mode,
+                         recorder=self.recorder,
+                         metrics_dict=metrics_dict,
+                         loss_dict=loss_dict,
+                         lr=lr,
+                         mapped_cls_name=self.mapped_cls_name)
+
 
             # Results at the end of the epoch
             log_str = '>>> {} Loss {:0.4f} Acc {:0.4f} IOU {:0.4F} Recall {:0.4f}'.format(
@@ -485,6 +506,7 @@ class Trainer(object):
 
                 # Update lr after backward (required by pytorch)
                 self.scheduler.step()
+                self.global_trainer_steps += 1
             else:
                 with torch.no_grad():
                     assert input_feature.shape[0] == 1 # validation batch size has to be 1
@@ -579,6 +601,14 @@ class Trainer(object):
                     log_str += 'RT {} '.format(remain_time)
                     log_str += 'RT PER EPOCH {}'.format(remain_time_1epoch)
                     self.recorder.logger.info(log_str)
+                
+                if self.recorder.wandb_logger is not None and mode == 'Train':
+                    self.recorder.wandb_logger.log({
+                            'lr': lr,
+                            'Loss': loss.item(),
+                            'Acc': mean_acc.item(),
+                            'IOU': mean_iou.item(),
+                        }, step=self.global_trainer_steps)
 
         with torch.no_grad():
             mean_acc, class_acc = self.metrics.getAcc()
@@ -631,6 +661,14 @@ class Trainer(object):
                                lr=lr,
                                mapped_cls_name=self.mapped_cls_name)
 
+            wandb_logger(epoch=epoch,
+                         mode=mode,
+                         recorder=self.recorder,
+                         metrics_dict=metrics_dict,
+                         loss_dict=loss_dict,
+                         lr=lr,
+                         mapped_cls_name=self.mapped_cls_name)
+            
             # Results at the end of the epoch
             log_str = '>>> {} Loss {:0.4f} Acc {:0.4f} IOU {:0.4F} Recall {:0.4f}'.format(
                 mode, loss_meter.avg, mean_acc.item(), mean_iou.item(), mean_recall.item())

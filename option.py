@@ -34,6 +34,11 @@ class Option(object):
         self.dist_url = 'env://'
         self.num_workers = 4 # number of threads used for data loading
 
+        # WandB options
+        self.use_wandb = self.config.get('use_wandb', False)
+        self.wandb_project = self.config.get('wandb_project', 'rangevit')
+        self.wandb_entity = self.config.get('wandb_entity', 'geometric-foundational-model')
+
         # Data config
         self.dataset = self.config['dataset']
         self.n_classes = self.config['n_classes']
@@ -100,8 +105,6 @@ class Option(object):
         self.save_eval_results = False
 
         self.save_path = args.save_path
-        self.save_path = os.path.join(self.save_path, 'log_{}'.format(self.id))
-
 
         # -----------------------------------------------------
         # Check options

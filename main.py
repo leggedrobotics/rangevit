@@ -302,6 +302,10 @@ if __name__ == '__main__':
     settings = Option(args.config_path, args)
 
     settings.id = args.id if args.id is not None else settings.id
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    settings.save_path = os.path.join(settings.save_path, current_time, 'log_{}'.format(settings.id))
+
+    print(f'ID: {settings.id}')
     settings.pretrained_model = args.pretrained_model if args.pretrained_model is not None else settings.pretrained_model
 
     if args.checkpoint is not None:

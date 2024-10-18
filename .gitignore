@@ -1,3 +1,6 @@
 *.pyc
 *core.*
 __pycache__/
+*.pth
+kernels/*
+wandb/*

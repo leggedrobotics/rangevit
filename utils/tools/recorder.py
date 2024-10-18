@@ -24,6 +24,17 @@ class Recorder(object):
         else:
             self.tensorboard = None
 
+        if settings.use_wandb:
+            import wandb
+            self.wandb_logger = wandb.init(project=settings.wandb_project,
+                       config=settings.__dict__,
+                       entity=settings.wandb_entity,
+                       name=settings.id)
+        else:
+            self.wandb_logger = None
+        
+        print(settings.__dict__)
+
         # make directories
         if not os.path.isdir(self.code_path):
             os.makedirs(self.code_path)

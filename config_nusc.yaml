@@ -6,6 +6,8 @@ id: 'exp_nusc'
 dataset: 'nuScenes'
 n_classes: 17 # 16 + 1(ignored)
 
+use_wandb: True
+
 # Train config
 has_label: true
 val_frequency: 10
