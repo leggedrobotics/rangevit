@@ -331,6 +331,12 @@ class RangeViT(nn.Module):
                 pretrained_state_dict = torch.load(pretrained_path, map_location='cpu')
                 if 'model' in pretrained_state_dict:
                     pretrained_state_dict = pretrained_state_dict['model']
+                # Adding for dinov2 trained models
+                elif 'teacher' in pretrained_state_dict:
+                    pretrained_state_dict = pretrained_state_dict['teacher']
+                    all_keys = list(pretrained_state_dict.keys())
+                    for key in all_keys:
+                        pretrained_state_dict[key.replace('backbone', 'encoder')] = pretrained_state_dict.pop(key)
                 elif 'pos_embed' in pretrained_state_dict.keys():
                     all_keys = list(pretrained_state_dict.keys())
                     for key in all_keys:
